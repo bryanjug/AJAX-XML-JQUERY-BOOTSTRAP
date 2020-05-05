@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<style>
+		body {
+			background-color: grey;
+		}
+		
+		#logon {
+			width: 60px;
+			margin-left: 80px;
+		}
+		input {
+			width: 100px;
+			margin: 1px;
+		}
+	</style>
+	
+	<script>
+		var XMLHttpRequestObject = false;
+
+		if (window.XMLHttpRequest) {
+	  		XMLHttpRequestObject = new XMLHttpRequest();
+		} else if (window.ActiveXObject) {
+	  		XMLHttpRequestObject = new ActiveXObject("Microsoft.XMLHTTP");
+		}
+
+		function getData(dataSource, divID) {
+			if(XMLHttpRequestObject) {
+				var obj = document.getElementById(divID);
+
+				var user = document.getElementById('userid').value;
+				var pass = document.getElementById('password').value;
+				var data = user + '|' + pass;
+
+				document.getElementById("targetDiv").innerHTML = "Loading...";
+
+				XMLHttpRequestObject.open("POST", "http://profperrytest.com/AJAXPHP/validate_logon.php");
+				XMLHttpRequestObject.setRequestHeader('Content-Type',
+					'application/x-www-form-urlencoded');
+
+				XMLHttpRequestObject.onreadystatechange = function() {
+					if( this.status == 200 && this.readyState == 4) { 
+						obj.innerHTML =
+							XMLHttpRequestObject.responseText;
+					}
+				}
+				XMLHttpRequestObject.send("data=" + data);
+			}
+		}
+	</script>
+</head>
+
+<body>
+
+<h1>Logon</h1>
+
+<form>
+
+	<p>
+		Userid:		
+		<input type="text" name="userid" id="userid" size="30" />
+		<br />
+		Password:	
+		<input type="text" name="password" id="password" size="30" />
+
+	</p>
+
+	<p>
+		<input type="button" value="Logon" id="logon"
+	   onclick="getData('http://profperrytest.com/AJAXPHP/validate_logon.php', 'targetDiv')">
+	</p>
+
+	<p id="targetDiv"></p>
+
+</form>
+
+</body>
+</html>

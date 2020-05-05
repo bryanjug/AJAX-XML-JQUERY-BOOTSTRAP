@@ -1,0 +1,31 @@
+nav { 
+	text-align: center; 
+    font-weight: bold; 
+}
+
+nav ul { 
+	list-style-type: none;
+    padding-left: 0; 
+}
+footer { 
+	background-color: #D2B48C;
+    font-size: small;
+	font-style: italic;
+	text-align: center;
+}
+
+/* Small devices (mobile landscape, 768px and up) The navbar toggle appears at this breakpoint */
+@media (max-width: 768px) {
+    nav {
+        background-color: #b88d7f;
+    }
+    nav li {
+        border-bottom: solid 1px white;
+        padding: 2%;
+    }
+    nav a {
+        color: white;
+    }
+}
+
+

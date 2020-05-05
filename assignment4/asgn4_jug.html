@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Assignment 4</title>
+		<meta charset="UTF-8" />
+		<style>
+			body {
+				background-color: grey;
+			}
+
+			#logon {
+				width: 60px;
+				margin-left: 80px;
+			}
+			input {
+				width: 100px;
+				margin: 1px;
+			}
+			td {
+				border: ridge #B0B0B0;
+			}
+
+			tr {
+				border: ridge #B0B0B0;
+			}
+		</style>
+
+		<script src="https://code.jquery.com/jquery-3.4.1.js"></script>
+
+		<script>
+			$(document).ready(function () {
+				//script load
+
+				$("#login").click(function () {
+					var id = $("#id").val();
+					var password = $("#password").val();
+					var mydata = id + "|" + password;
+
+					getXML(
+						"http://profperrytest.com/AJAXPHP/validate_logonxml.php",
+						mydata,
+						validateLogin
+					);
+
+					function getXML(url, data, callback) {
+						$.ajax({
+							type: "get",
+							url: url + "?data=" + data,
+							beforeSend: function () {
+								$("#status").html("Loading...");
+							},
+							timeout: 10000,
+							error: function () {
+								$("#status").html("Error...");
+							},
+							dataType: "text",
+							data: { data },
+							success: function (data) {
+								callback(data);
+								//$("#status").html(data);
+								//alert("mydata: " + data);
+							},
+						});
+					}
+					//<?xml version = "1.0" ?><myapp><logon>Error</logon><logon>nogood</logon></myapp>
+					function validateLogin(myXML) {
+						var xml = myXML,
+							xmlDoc = $.parseXML(xml),
+							$xml = $(xmlDoc),
+							$myLogStatus = $xml.find("logon").next();
+
+						//alert ($myLogStatus.text());
+
+						var myLogStatus = $myLogStatus.text();
+
+						if (myLogStatus == "nogood") {
+							//Display error
+							$("#status").html("Error...");
+							//alert (myLogStatus);
+						} else if (myLogStatus == "givemedata") {
+							getXML(
+								"http://profperrytest.com/AJAXPHP/displayAccount.php",
+								myLogStatus,
+								displayXML
+							); //runs displayXML once myLogStatus is authenticated
+						}
+					}
+					
+					//<?xml version = "1.0" ?><mydata><logon>Trans</logon><logon>givemedata</logon><trans>Food</trans><trans>Rent</trans><trans>Stuff</trans></mydata>
+					function displayXML(myXML) {
+						$('#status').html('');
+						$('#status').html('<br><h2>Account Transactions</h2>');
+
+						var xml = myXML,
+							xmlDoc = $.parseXML(xml),
+							$xml = $(xmlDoc),
+							$myLogStatus = $xml.find("trans").each(function() {
+								var trans = $(this);
+								$('#status').append('<tr><td>' + 
+									trans.text() + '</td></tr>');
+							});
+					}
+				});
+			});
+		</script>
+	</head>
+
+	<body>
+		<div class="form">
+			<h1>Login</h1>
+			<form action="#" id="login-form">
+				<div class="left">
+					<label for="id">User ID:</label><br /><br />
+					<label for="password">Password:</label>
+				</div>
+				<div>
+					<input type="text" name="id" id="id" /><br /><br />
+					<input type="password" name="password" id="password" /><br /><br />
+				</div>
+				<div class="center">
+					<input type="button" value="Login" id="login" />
+				</div>
+			</form>
+			<div id="status"></div>
+		</div>
+	</body>
+</html>

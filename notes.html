@@ -211,9 +211,9 @@
           { 
             if (XMLHttpRequestObject.readyState == 4 && 
               XMLHttpRequestObject.status == 200) { 
-				var xmlDocument = XMLHttpRequestObject.responseXML;
-				menu = xmlDocument.getElementsByTagName("menuitem");
-				listmenu();
+                var xmlDocument = XMLHttpRequestObject.responseXML;
+                menu = xmlDocument.getElementsByTagName("menuitem");
+                listmenu();
             } 
           } 
 
@@ -230,9 +230,9 @@
           { 
             if (XMLHttpRequestObject.readyState == 4 && 
               XMLHttpRequestObject.status == 200) { 
-            var xmlDocument = XMLHttpRequestObject.responseXML;
-            menu = xmlDocument.getElementsByTagName("menuitem");
-            listmenu();
+                var xmlDocument = XMLHttpRequestObject.responseXML;
+                menu = xmlDocument.getElementsByTagName("menuitem");
+                listmenu();
             } 
           } 
 
@@ -284,3 +284,2305 @@
   </body>
 
 </html>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>Assignment 3</title>
+	<meta charset="UTF-8">
+	<style>
+		body {
+			background-color: grey;
+		}
+		
+		#logon {
+			width: 60px;
+			margin-left: 80px;
+		}
+		input {
+			width: 100px;
+			margin: 1px;
+		}
+	</style>
+	
+	<script>
+		var XMLHttpRequestObject = false;
+
+		if (window.XMLHttpRequest) {
+	  		XMLHttpRequestObject = new XMLHttpRequest();
+			XMLHttpRequestObject.overrideMimeType("text/xml");  //XML
+		} else if (window.ActiveXObject) {
+	  		XMLHttpRequestObject = new ActiveXObject("Microsoft.XMLHTTP");
+		}
+
+		function validateLogon(dataSource, divID) {
+			var user = document.getElementById('userid').value;
+			var pass = document.getElementById('password').value;
+			var data = user + '|' + pass;
+		  
+		  	getXML(dataSource, divID, data);
+			
+		  	return false;
+		}
+
+		function getXML(dataSource, divID, data) {
+			if(XMLHttpRequestObject) {
+				var obj = document.getElementById(divID);
+				obj.innerHTML = "Loading...";  //new!!
+
+				XMLHttpRequestObject.open("POST", dataSource);
+				XMLHttpRequestObject.setRequestHeader('Content-Type',
+					'application/x-www-form-urlencoded');
+
+				XMLHttpRequestObject.onreadystatechange = function() {
+					if (XMLHttpRequestObject.readyState == 4 && 
+		        	XMLHttpRequestObject.status == 200) { 
+						var myXML = XMLHttpRequestObject.responseXML; //XML
+							displayXML(myXML);
+					}
+				}
+				XMLHttpRequestObject.send("data=" + data);
+			}
+		}
+
+		function showXMLText(myXML) {
+			//Displays XML object's data in an alert() box
+			var myXMLtext = (new XMLSerializer()).serializeToString(myXML);
+			myXMLformatted = myXMLtext.replace(/</g, "\n<");
+			alert(myXMLformatted);
+		}
+
+		function displayXML(myXML) {
+			//showXMLText(myXML);
+			//Store the "logon" elementss into an array
+			//Retrieve the first two elements of the array into two javascript variables 
+			//for the myLogonText and myPassKey variables
+			var XMLElements = myXML.getElementsByTagName("logon");
+			var myLogonText = XMLElements[0].firstChild.data;
+			var myPassKey = XMLElements[1].firstChild.data;
+			
+			if (myLogonText == "Error")
+			{
+				//Display error
+				document.getElementById('targetDiv').innerHTML = myLogonText;
+				
+			} else {
+				
+				if (myLogonText == "Success")
+				{
+					//Call the getXML function
+					getXML("http://profperrytest.com/AJAXPHP/displayAccount.php", "targetDiv", myPassKey);
+				} else {
+					//Store the "trans" elementss into an array
+					var loopIndex;
+        			var transactions = myXML.getElementsByTagName('trans');
+					var transactionCount = transactions.length;
+
+					document.getElementById('loggedInMessage').innerHTML += "<b>Account Transactions</b>";
+
+					//Loop throught the array and display each transactions in HTML table row
+					for (loopIndex = 0; loopIndex < transactionCount; loopIndex++) {
+						document.getElementById('results').innerHTML += "<tr><td>" + transactions[loopIndex].firstChild.data + "</td></tr>";
+					}
+
+					//Hide logon div   
+					var myLogonForm = document.getElementById("form-container");
+					myLogonForm.style.display = "none";
+					document.getElementById("results").style.border = "ridge #B0B0B0";
+				}
+			}
+		}
+	</script>
+</head>
+
+<body>
+	<form id="form-container">
+		<h1>Logon</h1>
+		<p>
+			Userid:		
+			<input type="text" name="userid" id="userid" size="30" />
+			<br />
+			Password:	
+			<input type="text" name="password" id="password" size="30" />
+
+		</p>
+
+		<p>
+			<input type="button" value="Logon" 
+				onclick= "validateLogon('http://profperrytest.com/AJAXPHP/validate_logonxml.php', 'targetDiv')">
+		</p>
+
+		<p id="targetDiv"></p>
+
+	</form>
+	<div>
+		<h4 id="loggedInMessage"></h4>
+		<table id="results">
+
+		</table>
+	</div>
+</body>
+</html>
+
+//JavaScript AJAX Call
+
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Assignment 2</title>
+	<style>
+		.left {
+			float: left;
+		}
+		.center {
+			text-align: center;
+		}
+		.form {
+			background: lightgrey;
+			border-radius: 10px;
+			margin: 150px auto 0 auto;
+			padding: 20px;
+			width: 300px;
+		}
+	</style>
+</head>
+<body>
+	<div class="form">
+		<h1>Login</h1>
+		<form action="#" id="login-form">
+			<div class="left">
+				<label for="id">User ID:</label><br><br>
+				<label for="password">Password:</label>
+			</div>
+			<div>
+				<input type="text" name="id" id="id"><br><br>
+				<input type="password" name="password" id="password"><br><br>
+			</div>
+
+			<div class="center">
+				<input type="button" value="Login" id="login">
+			</div>
+		</form>
+		<div id="status"></div>
+	</div>
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	<script>
+	   $(document).ready(function ()   {
+		$('#login').click (function () {
+			var status = $('#status');
+			var id = $('#id').val();
+			var password = $('#password').val();
+			var data = id + '|' + password;
+			status.html('Loading...');
+			$.post(
+				"http://profperrytest.com/AJAXPHP/validate_logon.php",
+				'data='+data,
+				function(result){
+					status.html(result);
+				});
+		});
+	  });
+	</script>
+</body>
+</html>
+
+//JQuery AJAX Call
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Assignment 2 Using the .ajax Method</title>
+	<style>
+		.left {
+			float: left;
+		}
+
+		.center {
+			text-align: center;
+		}
+		.form {
+			background: lightgrey;
+			border-radius: 10px;
+			margin: 150px auto 0 auto;
+			padding: 20px;
+			width: 300px;
+		}
+	</style>
+</head>
+<body>
+	<div class="form">
+		<h1>Login</h1>
+		<form action="#" id="login-form">
+			<div class="left">
+				<label for="id">User ID:</label><br><br>
+				<label for="password">Password:</label>
+			</div>
+			<div>
+				<input type="text" name="id" id="id"><br><br>
+				<input type="password" name="password" id="password"><br><br>
+			</div>
+			<div class="center">
+				<input type="button" value="Login" id="login">
+			</div>
+		</form>
+		<div id="status"></div>
+	</div>
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+
+	<script>
+
+	   $(document).ready(function ()
+	   {
+		 $('#login').click (function ()
+		 {
+		 	var id = $('#id').val();
+			var password = $('#password').val();
+			var mydata = id + '|' + password;
+			alert("mydata: " + mydata);
+			$.ajax(
+			{
+				type: "get",
+				url: "http://profperrytest.com/AJAXPHP/validate_logon.php",
+				beforeSend: function() {
+					$("#status").html('Loading...');
+				},
+				timeout: 10000,
+				dataType: "text",
+				data: { data: mydata },
+				success: function(result)
+				{
+					$("#status").html(result);
+				}
+			 });
+		 });
+	  });
+	</script>
+</body>
+</html>
+
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Assignment 4</title>
+		<meta charset="UTF-8" />
+		<style>
+			body {
+				background-color: grey;
+			}
+
+			#logon {
+				width: 60px;
+				margin-left: 80px;
+			}
+			input {
+				width: 100px;
+				margin: 1px;
+			}
+			td {
+				border: ridge #B0B0B0;
+			}
+
+			tr {
+				border: ridge #B0B0B0;
+			}
+		</style>
+
+		<script src="https://code.jquery.com/jquery-3.4.1.js"></script>
+
+		<script>
+			$(document).ready(function () {
+				//script load
+
+				$("#login").click(function () {
+					var id = $("#id").val();
+					var password = $("#password").val();
+					var mydata = id + "|" + password;
+
+					getXML(
+						"http://profperrytest.com/AJAXPHP/validate_logonxml.php",
+						mydata,
+						validateLogin
+					);
+
+					function getXML(url, data, callback) {
+						$.ajax({
+							type: "get",
+							url: url + "?data=" + data,
+							beforeSend: function () {
+								$("#status").html("Loading...");
+							},
+							timeout: 10000,
+							error: function () {
+								$("#status").html("Error...");
+							},
+							dataType: "text",
+							data: { data },
+							success: function (data) {
+								callback(data);
+								//$("#status").html(data);
+								//alert("mydata: " + data);
+							},
+						});
+					}
+					//<?xml version = "1.0" ?><myapp><logon>Error</logon><logon>nogood</logon></myapp>
+					function validateLogin(myXML) {
+						var xml = myXML,
+							xmlDoc = $.parseXML(xml),
+							$xml = $(xmlDoc),
+							$myLogStatus = $xml.find("logon").next();
+
+						//alert ($myLogStatus.text());
+
+						var myLogStatus = $myLogStatus.text();
+
+						if (myLogStatus == "nogood") {
+							//Display error
+							$("#status").html("Error...");
+							//alert (myLogStatus);
+						} else if (myLogStatus == "givemedata") {
+							getXML(
+								"http://profperrytest.com/AJAXPHP/displayAccount.php",
+								myLogStatus,
+								displayXML
+							); //runs displayXML once myLogStatus is authenticated
+						}
+					}
+					
+					//<?xml version = "1.0" ?><mydata><logon>Trans</logon><logon>givemedata</logon><trans>Food</trans><trans>Rent</trans><trans>Stuff</trans></mydata>
+					function displayXML(myXML) {
+						$('#status').html('');
+						$('#status').html('<br><h2>Account Transactions</h2>');
+
+						var xml = myXML,
+							xmlDoc = $.parseXML(xml),
+							$xml = $(xmlDoc),
+							$myLogStatus = $xml.find("trans").each(function() {
+								var trans = $(this);
+								$('#status').append('<tr><td>' + 
+									trans.text() + '</td></tr>');
+							});
+					}
+				});
+			});
+		</script>
+	</head>
+
+	<body>
+		<div class="form">
+			<h1>Login</h1>
+			<form action="#" id="login-form">
+				<div class="left">
+					<label for="id">User ID:</label><br /><br />
+					<label for="password">Password:</label>
+				</div>
+				<div>
+					<input type="text" name="id" id="id" /><br /><br />
+					<input type="password" name="password" id="password" /><br /><br />
+				</div>
+				<div class="center">
+					<input type="button" value="Login" id="login" />
+				</div>
+			</form>
+			<div id="status"></div>
+		</div>
+	</body>
+</html>
+
+//jquery mobile buttons
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>jQuery Mobile</title>
+
+    <link rel = "apple-touch-icon" href = "myiPhoneIcon.png" />
+
+	<link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />
+	<script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+
+</head>
+
+<body>
+	<div data-role="page">
+    	<header data-role="header">
+        	<h1>Buttons</h1>
+    	</header>
+
+    	<section data-role="content">
+    		<!-- INLINE BUTTONS -->
+        	<a href="#" data-role="button" data-inline="true">Cancel</a>
+        	<a href="#" data-role="button" data-inline="true">OK</a>
+        	<!-- BUTTONS ICONS -->
+			<a href="#" data-role="button" data-icon="delete">Delete</a>
+        	<a href="#" data-role="button" data-icon="home">Home</a>
+        	<!-- GROUPED BUTTONS -->
+        	<div data-role="controlgroup" data-type="horizontal">
+        		<a href="#" data-role="button">Yes</a>
+        		<a href="#" data-role="button">No</a>
+        		<a href="#" data-role="button">Maybe</a>
+        	</div>
+        	<!-- BACK BUTTON -->
+        	<a href="#" data-role="button" data-rel="back" data-icon="back">Back to previous page</a>
+    	</section>
+
+    	<footer data-role="footer">
+    		<a href="http://www.facebook.com" data-role="button"
+       	   	   data-icon="plus">Add to Facebook</a>
+    		<a href="http://www.twitter.com" data-role="button"
+               data-icon="plus">Tweet this Page</a>
+    	</footer>
+	</div>
+</body>
+</html>
+
+//multiple pages jquery mobile
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>jQuery Mobile</title>
+
+    <link rel = "apple-touch-icon" href = "myiPhoneIcon.png" />
+
+	<link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />
+	<script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+
+</head>
+
+<body>
+
+	<!-- HOME -->
+	<div data-role="page" id="home">
+    	<header data-role="header">
+        	<h1>Vecta Corp</h1>
+        	<div data-role="navbar">
+				<ul>
+					<li><a href="#home" data-icon="home" class="ui-btn-active" data-theme="b">Home</a></li>
+					<li><a href="#solutions" data-icon="star" data-theme="b">Solutions</a></li>
+	            	<li><a href="#contactus" data-icon="grid" data-theme="b">Contact Us</a></li>
+				</ul>
+	    	</div>
+    	</header>
+
+    	<section data-role="content">
+			<h2>Why people choose Vecta</h2>
+	    	<p>Vecta Corp provides software packages that help companies increase sales in three ways:</p>
+	    	<ul>
+	    		<li>Finding prosects</li>
+	    		<li>Converting prospects to customers</li>
+	    		<li>Retaining customers</li>
+	    	</ul>
+	    	<p>To find out more, go to <a href="#solutions">Solutions</a>.</p>
+
+	    	<h3>What our clients say</h3>
+	    	<q>Throughout the years we have worked with Vecta Corp, we have always been amazed at their level of dedication and professionalism.</q>
+	    	<cite>Zak Ruvalcaba, CEO<br>
+	    	Module Media, Inc.</cite>
+	    	<q>Incredible results from an incredible effort by the Vecta Corp. team! We are very pleased with the business benefits we have received by working with them.</q>
+	    	<cite>Robin Banks, CEO<br>
+	    	Profits Financial, Inc.</cite>
+    	</section>
+
+    	<footer data-role="footer">
+        	<h4>&copy; 2012</h4>
+    	</footer>
+	</div>
+
+	<!-- SOLUTIONS -->
+	<div data-role="page" id="solutions">
+    	<header data-role="header">
+        	<h1>Vecta Corp</h1>
+        	<div data-role="navbar">
+				<ul>
+					<li><a href="#home" data-icon="home" data-theme="b">Home</a></li>
+					<li><a href="#solutions" data-icon="star" class="ui-btn-active" data-theme="b">Solutions</a></li>
+            		<li><a href="#contactus" data-icon="grid" data-theme="b">Contact Us</a></li>
+				</ul>
+			</div>
+    	</header>
+
+    	<section data-role="content">
+			<p>Vecta Corp provides scalable business solutions to help companies achieve success through revenue increase, cost management, and user satisfaction.</p>
+
+			<h3>vProspect 2.0</h3>
+			<img src="images/logo_vprospect.gif" width="84" height="48">
+        	<p>Define and research your target audience, define your strategy to reach that audience and present a strong and memorable brand to that audience.
+        	<a href="#vprospect" data-transition="pop">Read more...</a></p>
+
+      		<h3>vConvert 2.0</h3>
+      		<img src="images/logo_vconvert.gif" width="84" height="48">
+      		<p>Create a highly user-friendly and easy-to-navigate information architecture that will help your prospects interact with the company on a highly interactive level.
+        	<a href="#vconvert" data-rel="dialog" data-transition="pop">Read more...</a></p>
+
+      		<h3>vRetain 1.0</h3>
+      		<img src="images/logo_vretain.gif" width="84" height="48">
+      		<p>Build on existing customer relationships to improve productivity and maximize customer loyalty, while growing revenues.
+        	<a href="#vretain" data-rel="dialog" data-transition="pop">Read more...</a></p>
+    	</section>
+
+    	<footer data-role="footer">
+        	<h4>&copy; 2012</h4>
+    	</footer>
+	</div>
+
+	<!-- SOLUTIONS : VPROSPECT -->
+	<div data-role="page" id="vprospect">
+    	<header data-role="header">
+        	<h1>Vecta Corp</h1>
+    	</header>
+
+    	<section data-role="content">
+    		<img src="images/logo_vprospect.gif" width="84" height="48">
+    		<h2>vProspect 2.0</h2>
+			<h3>What vProspect can help you do</h3>
+			<ul>
+            	<li>Define your target audience and competition.</li>
+            	<li>Research your competition and your target audience&rsquo;s behavior, needs, technical know-how level, etc.</li>
+            	<li>Establish a conceptual and visual identity that corresponds to the defined direction of the company.</li>
+            	<li>Ensure consistency across all media.</li>
+            	<li>Establish corporate guidelines for cohesiveness of any future developments.</li>
+            	<li>Define and/or re-define your service and/or product offerings.</li>
+            	<li>Define expansion plans and strategies.</li>
+            	<li>Implement search engine optimization of all Online materials.</li>
+			</ul>
+  		</section>
+	</div>
+
+	<!-- SOLUTIONS : VCONVERT -->
+	<div data-role="page" id="vconvert">
+    	<header data-role="header">
+        	<h1>Vecta Corp</h1>
+    	</header>
+
+    	<section data-role="content">
+    		<img src="images/logo_vconvert.gif" width="84" height="48">
+    		<h2>vConvert 2.0</h2>
+			<h3>What vConvert can help you do</h3>
+			<ul>
+            	<li>Build a visual and functional user front end that focuses exclusively on providing an exceptional user experience while conveying company, service and product information.</li>
+            	<li>Cause the desired emotional response in a user to facilitate conversion to a client.</li>
+            	<li>Build sites that move beyond merely conveying information. They advertise, motivate, excite and inspire. Users are more likely to remember and recommend your site.</li>
+            	<li>Research your target audience&rsquo;s behavior, needs, technical know-how and level, etc.</li>
+            	<li>Develop any applicable back-end programs to facilitate user interaction with the company and offerings on a highly functional level to allow any kind of online transactions and a completely centralized information collection and access point, accessible from any location.</li>
+            	<li>Create an architecture to display the site content and information in a logical and easy to access manner. Facilitating thereby the desired ease, for the user to find what they are looking for quickly and easily. Allowing the user to focus on the subject at hand rather than searching for information on the site.</li>
+	  		</ul>
+  		</section>
+	</div>
+
+	<!-- SOLUTIONS : VRETAIN -->
+	<div data-role="page" id="vretain">
+    	<header data-role="header">
+        	<h1>Vecta Corp</h1>
+    	</header>
+
+    	<section data-role="content">
+    		<img src="images/logo_vconvert.gif" width="84" height="48">
+    		<h2>vRetail 1.0</h2>
+			<h3>What vRetain can help you do</h3>
+			<ul>
+            	<li>Streamline existing business infrastructures by utilizing technology for automation, information centralization, and information sharing among all business units and departments, as well as efficient prospect &amp; customer tracking and interaction within the company.</li>
+            	<li>Collect crucial information, data and statistics that allow a company to keep in touch with users in a very customized, highly targeted way.</li>
+            	<li>Analyze site visitor behavior through traffic analysis, usability studies and interactive polling. Recommending and making site and application adjustments to improve usability and user experience.</li>
+			</ul>
+  		</section>
+	</div>
+
+	<!-- CONTACT US -->
+	<div data-role="page" id="contactus">
+    	<header data-role="header">
+        	<h1>Vecta Corp</h1>
+        	<div data-role="navbar">
+				<ul>
+					<li><a href="#home" data-icon="home" data-theme="b">Home</a></li>
+					<li><a href="#solutions" data-icon="star" data-theme="b">Solutions</a></li>
+	            	<li><a href="#contactus" data-icon="grid" class="ui-btn-active" data-theme="b">Contact Us</a></li>
+				</ul>
+	    	</div>
+    	</header>
+
+    	<section data-role="content">
+    		<h4>Please contact us by phone, mail, or email...whatever works best for you</h4>
+			<h4>Phone</h4><p><a href="tel:555-555-5555">555-555-5555</a></p>
+        	<h4>Mail</h4><p>Vecta Corporation<br>555 Sample Dr.<br>San Diego, CA 55555</p>
+        	<h4>Email</h4><p><a href="mailto:sales@vectacorp.com">sales@vectacorp.com</a></p><br>
+        	<a href"#" data-role="button" dat-rel="back" data-icon="back" data-theme="b">Back to previous page</a>
+    	</section>
+
+    	<footer data-role="footer">
+        	<h4>&copy; 2012</h4>
+    	</footer>
+	</div>
+</body>
+</html>
+
+//dialogs and transitions jquery mobile
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>jQuery Mobile</title>
+
+    <link rel = "apple-touch-icon" href = "myiPhoneIcon.png" />
+
+	<link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />
+	<script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+
+</head>
+
+<body>
+	<div data-role="page" id="home">
+    	<header data-role="header">
+        	<h1>Solutions</h1>
+    	</header>
+
+    	<section data-role="content">
+        	<p>Vecta Corp. provides scalable business solutions to help companies achieve success through revenue increase, cost management, and user satisfaction.</p>
+
+        	<h3>vProspect 2.0</h3>
+        	<img src="images/logo_vprospect.gif" width="63" height="36" style="float:left;">
+        	<p>Define and research your target audience, define your strategy to reach that audience and present a strong and memorable brand to that audience.
+        	<a href="#vprospect" data-rel="dialog" data-transition="pop">Read more...</a></p>
+
+        	<h3>vConvert 2.0</h3>
+        	<img src="images/logo_vconvert.gif" width="63" height="36" style="float:left;">
+        	<p>Create a highly user-friendly and easy-to-navigate information architecture that will help your prospects interact with the company on a highly interactive level.
+        	<a href="#vconvert" data-rel="dialog" data-transition="pop">Read more...</a></p>
+
+        	<h3>vRetain 1.0</h3>
+        	<img src="images/logo_vretain.gif" width="63" height="36" style="float:left;">
+        	<p>Build on existing customer relationships to improve productivity and maximize customer loyalty, while growing revenues.
+        	<a href="#vretain" data-rel="dialog" data-transition="pop">Read more...</a></p>
+    	</section>
+
+    	<footer data-role="footer">
+        	<h4>&copy; 2012</h4>
+    	</footer>
+	</div>
+
+	<!-- PAGE 2 - VPROSPECT -->
+	<div data-role="page" id="vprospect">
+		<header data-role="header">
+			<h1>vProspect 2.0</h1>
+		</header>
+
+		<section data-role="content">
+			<p>Define and research your target audience, define your strategy to reach that audience and present a strong and memorable brand to that audience. vProspect can help your business:</p>
+	  		<p><a href="#home" data-direction="reverse" data-role="button">Back to solutions</a></p>
+		</section>
+
+		<footer data-role="footer">
+			<h4>&copy; 2012</h4>
+		</footer>
+	</div>
+
+	<!-- PAGE 3 - VCONVERT -->
+	<div data-role="page" id="vconvert">
+		<header data-role="header">
+			<h1>vConvert 2.0</h1>
+		</header>
+
+		<section data-role="content">
+			<p>Create a highly user-friendly and easy-to-navigate information architecture that will help your prospects interact with the company on a highly interactive level. vConvert can help your business:</p>
+	  		<p><a href="#home" data-direction="reverse" data-role="button">Back to solutions</a></p>
+  		</section>
+
+		<footer data-role="footer">
+			<h4>&copy; 2012</h4>
+		</footer>
+	</div>
+
+	<!-- PAGE 4 - VRETAIN -->
+	<div data-role="page" id="vretain">
+		<header data-role="header">
+			<h1>vRetain 1.0</h1>
+		</header>
+
+		<section data-role="content">
+			<p>Build on existing customer relationships to improve productivity and maximize customer loyalty, while growing revenues. vRetain can help your business:</p>
+	  		<p><a href="#home" data-direction="reverse" data-role="button">Back to solutions</a></p>
+		</section>
+
+		<footer data-role="footer">
+			<h4>&copy; 2012</h4>
+		</footer>
+	</div>
+</body>
+</html>
+
+//navigation bar
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>jQuery Mobile</title>
+
+    <link rel = "apple-touch-icon" href = "myiPhoneIcon.png" />
+
+	<link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />
+	<script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+</head>
+
+<body>
+	<div data-role="page">
+    	<header data-role="header">
+        	<h1>Solutions</h1>
+        	<div data-role="navbar">
+				<ul>
+					<li><a href="#home" data-icon="home" data-theme="b">Home</a></li>
+					<li><a href="#solutions" data-icon="star" class="ui-btn-active" data-theme="b">Solutions</a></li>
+            		<li><a href="#contactus" data-icon="grid" data-theme="b">Contact Us</a></li>
+				</ul>
+			</div>
+    	</header>
+
+    	<section data-role="content">
+        	<p>Vecta Corp. provides scalable business solutions to help companies achieve success through revenue increase, cost management, and user satisfaction.</p>
+        	<h3>vProspect 2.0</h3>
+      		<img src="images/logo_vprospect.gif" width="63" height="36" style="float:left;">
+       		<p>Define and research your target audience, define your strategy to reach that audience and present a strong and memorable brand to that audience.
+        	<a href="#vprospect">Read more...</a></p>
+
+      		<h3>vConvert 2.0</h3>
+      		<img src="images/logo_vconvert.gif" width="63" height="36" style="float:left;">
+        	<p>Create a highly user-friendly and easy-to-navigate information architecture that will help your prospects interact with the company on a highly interactive level.
+        	<a href="#vconvert">Read more...</a></p>
+
+      		<h3>vRetain 1.0</h3>
+      		<img src="images/logo_vretain.gif" width="63" height="36" style="float:left;">
+        	<p>Build on existing customer relationships to improve productivity and maximize customer loyalty, while growing revenues.
+        	<a href="#vretain">Read more...</a></p>
+    	</section>
+
+    	<footer data-role="footer">
+        	<h4>&copy; 2012</h4>
+    	</footer>
+	</div>
+</body>
+</html>
+
+h2 {
+	margin: 0 0 1em;
+}
+#home h2 {
+	margin: 0 0 .5em;
+}
+h3 {
+	margin: .75em 0 .5em;
+	padding-top: .5em;
+}
+h4 {
+	margin: .75em 0 .25em;
+}
+img {
+	float: left;
+	margin: 0 .5em .5em 0;
+}
+p {
+	margin: 0 0 .5em;
+}
+a {
+	margin-bottom: .5em;
+}
+q {
+	margin-bottom: .5em;
+	display: block;
+}
+cite {
+	margin: .5em 0;
+	display: block;
+	text-align: right;
+}
+ul, li {
+	margin: 0;
+	padding: 0;
+}
+ul {
+	padding-left: 1em;
+	padding-bottom: .5em;
+}
+li {
+	padding-left: .25em;
+	padding-bottom: .25em;
+}
+
+#headshot {
+	width: 230%;
+}
+
+#image {
+	vertical-align: top;
+	display: inline-block;
+	width: 25%;
+	padding-bottom: 5%;
+}
+
+#contact p {
+	line-height: 90%;
+	font-size: 150%;
+}
+
+#contact h2:nth-of-type(2) {
+	padding-bottom: 10%;
+}
+#contact h2 {
+	line-height: 90%;
+}
+
+h1 {
+	font-size: 250%;
+}
+
+#education li {
+	font-size: 140%;
+	margin-left: 5%
+}
+
+
+#summary p {
+	font-size: 140%;
+	margin-left: 5%
+}
+
+#skillsOffered table {
+	border: double;
+}
+
+#skillsOffered td {
+	border: double;
+}
+
+#employmentHistory h2 {
+	line-height: 30%;
+}
+
+#employmentHistory p {
+	font-size: 150%;
+	padding-top: 3%;
+}
+
+//assignment 5
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+		<title>jQuery Mobile</title>
+
+		<link rel = "apple-touch-icon" href = "myiPhoneIcon.png" />
+
+		<link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />
+		<script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+        <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+        <link rel="stylesheet" href="css/styles.css" />
+	</head>
+<body>
+    <div data-role="page" id='home'>
+        <header data-role="header">
+            <h1>Resume</h1>
+            <div data-role="navbar">
+				<ul>
+					<li><a href="#home" data-icon="home" class="ui-btn-active" data-theme="b">Home</a></li>
+					<li><a href="#skills" data-icon="star" data-theme="b">Skills</a></li>
+	            	<li><a href="#employment" data-icon="grid" data-theme="b">Employment</a></li>
+				</ul>
+	    	</div>
+        </header>
+        <section data-role="content">
+            <section id='image'>
+                <img src='https://scontent-lax3-1.cdninstagram.com/v/t51.2885-19/s150x150/69926143_2502799763287095_2506398882217328640_n.jpg?_nc_ht=scontent-lax3-1.cdninstagram.com&_nc_ohc=rwdgcHjY-cwAX_a_e4R&oh=d6c0a870d81c464f2eab23ab69e291cb&oe=5EC4C3AF' id='headshot'>
+            </section>
+            <section id='contact'>
+                <h2>Bryan Jug</h2>
+                <h2>Software Engineer Student</h2>
+                <p>PO Box 2095</p>
+                <p>Temecula CA, 92593</p>
+                <p><a href='tel:951-595-5284'>951.595.5284</a></p>
+                <p><a>bjug3242@student.palomar.edu</a></p>
+            </section>
+            <section id='education'>
+                <h1>Education</h1>
+                <ul>
+                    <li>Palomar College, AS Degree, 2020</li>
+                    <li>MySQL, React.js, JavaScript Data Structures & Algorithms Udemy courses</li>
+                </ul>
+            </section>
+            <section id='summary'>
+                <h1>Qualification Summary</h1>
+                <p>Over 1 year of experience as a Software Engineer and a student of Palomar College. 
+                    Classes were held both in person and online. The Udemy courses were taken as extra
+                     curricular activities.
+                </p>
+            </section>
+        </section>
+        <footer data-role="footer">
+            <h1>&copy; 2015</h1>
+        </footer>
+    </div>
+    <div data-role='page' id='skills'>
+        <header data-role="header">
+            <h1>Resume</h1>
+            <div data-role="navbar">
+				<ul>
+					<li><a href="#home" data-icon="home" data-theme="b">Home</a></li>
+					<li><a href="#skills" data-icon="star" class="ui-btn-active" data-theme="b">Skills</a></li>
+	            	<li><a href="#employment" data-icon="grid" data-theme="b">Employment</a></li>
+				</ul>
+            </div>
+        </header>
+        <section data-role="content">
+            <section id='skillsOffered'>
+                <h1>Skills Offered</h1>
+                <table>
+                    <tr>
+                        <th>Skill</th>
+                        <th>Description</th>
+                    </tr>
+                    <tr>
+                        <td>JavaScript</td>
+                        <td>Learned through college classes and udemy courses</td>
+                    </tr>
+                    <tr>
+                        <td>MySQL</td>
+                        <td>Learned through college classes and udemy courses</td>
+                    </tr>
+                    <tr>
+                        <td>PHP</td>
+                        <td>Learned through college classes</td>
+                    </tr>
+                    <tr>
+                        <td>HTML & Css</td>
+                        <td>Learned through college classes and CodeAcademy</td>
+                    </tr>
+                    <tr>
+                        <td>NoSQL</td>
+                        <td>Learned through udemy courses</td>
+                    </tr>
+                    <tr>
+                        <td>React.js</td>
+                        <td>Learned through udemy courses</td>
+                    </tr>
+                    <tr>
+                        <td>jQuery</td>
+                        <td>Learned through college classes</td>
+                    </tr>
+                    <tr>
+                        <td>Unity & Blender</td>
+                        <td>Built animations with 3D objects</td>
+                    </tr>
+                    <tr>
+                        <td>R</td>
+                        <td>Learned through college classes</td>
+                    </tr>
+                    <tr>
+                        <td>C</td>
+                        <td>Learned through college classes</td>
+                    </tr>
+                </table>
+            </section>
+        </section>
+        <footer data-role="footer">
+            <h4>&copy; 2015</h4>
+        </footer>
+    </div>
+    <div data-role='page' id='employment'>
+        <header data-role="header">
+            <h1>Resume</h1>
+            <div data-role="navbar">
+				<ul>
+					<li><a href="#home" data-icon="home" data-theme="b">Home</a></li>
+					<li><a href="#skills" data-icon="star" data-theme="b">Skills</a></li>
+	            	<li><a href="#employment" data-icon="grid" class="ui-btn-active" data-theme="b">Employment</a></li>
+				</ul>
+            </div>
+        </header>
+        <section data-role="content">
+            <section id='employmentHistory'>
+                <h1>Employment History</h1>
+                
+                <h1>Get Flexed, Temecula, CA</h1>
+                <h2>General Warehouse</h2>
+                <h2>Jan. 2016 - 2018</h2>
+                <p>Part time warehouse stocking of various workout equipment. The job 
+                    included installing the equipment into gyms in local areas.
+                </p>
+
+                <h1>Instacart</h1>
+                <h2>Food Delivery</h2>
+                <h2>Jan. 2018 - Present</h2>
+                <p>Part time grocery delivering in my local area and other parts of California. 
+                    Requires the person to drive and deliver people bags filled with food.
+                </p>
+            </section>
+        </section>
+        <footer data-role="footer">
+            <h4>&copy; 2015</h4>
+        </footer>
+    </div>
+</body>
+</html>
+
+//assignment 6
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assignment 6</title>
+    <link rel="stylesheet" href="styles.css">
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    
+    <script src="show_width.js"></script>
+</head>
+<body>
+<div class="container-fluid">
+    <div class='row'>
+        <div class='col-12'>
+            <h1>News Sites</h1>
+        </div>
+    </div>
+    <div class='row'>
+        <div class='col-12 col-sm-12 col-md-2'>
+            <nav>
+                <ul>
+                    <li><a href="https://www.cnn.com/">CNN</a></li> 
+                    <li><a href="https://www.msnbc.com/">MSNBC</a></li>
+                    <li><a href="https://www.foxnews.com/">FOX NEWS</a></li>
+                </ul>
+            </nav>
+        </div>
+        <div class='col-12 col-sm-12 col-md-10'>
+            <main>
+                <h2>News Links</h2>
+                <p>Select the News links to catch up on all the latest news!</p>
+            </main>
+        </div>
+    </div>
+    <div class='row'>
+        <div class='col-sm'>
+            <footer>
+                <span id="thewidth"><span>
+            </footer>       
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+</body>
+</html>
+
+function showReWidth()
+{
+	var myWidth = 0, myHeight = 0;
+	if( typeof( window.innerWidth ) == 'number' ) {
+		myWidth = window.innerWidth; myHeight = window.innerHeight;
+	} else if( document.documentElement && ( document.documentElement.clientWidth ||document.documentElement.clientHeight ) ) {
+		myWidth = document.documentElement.clientWidth; myHeight = document.documentElement.clientHeight;
+	} else if( document.body && ( document.body.clientWidth || document.body.clientHeight ) ) {
+		myWidth = document.body.clientWidth; myHeight = document.body.clientHeight;
+	}
+	
+	myInfo = "<span style='color: brown;'><b>col-xl-#</b> (xlarge devices - screen width equal to or greater than 1200px)</span>";
+	myInfosmall = "<span style='font-size: .7em; color: brown;'><b>col-xl-#</b></span>";
+	
+	if (myWidth < 1200)
+	{
+		myInfo = "<span style='color: purle;'><b>col-lg-#</b> (large devices - screen width equal to or greater than 992px)</span>";
+		myInfosmall = "<span style='font-size: .7em; color: purple;'><b>col-lg-#</b></span>";
+	
+	}
+	
+	if (myWidth < 992)
+	{
+		myInfo = "<span style='color: green;'><b>col-md-#</b> (medium devices - screen width equal to or greater than 768px)</span>";
+		myInfosmall = "<span style='font-size: .7em; color: green;'><b>col-md-#</b></span>";
+	}
+	
+	if (myWidth < 768)
+	{
+		myInfo = "<span style='color: blue;'><b>col-sm-#</b> (small devices - screen width equal to or greater than 576px)</span>";
+		myInfosmall = "<span style='font-size: .7em; color: blue;'><b>col-sm-#</b></span>";
+	}
+		
+	if (myWidth < 576)
+	{
+		myInfo = "<span style='color: red;'> <b>col#</b> - (extra small devices - screen width less than 576px)</span>";
+		myInfosmall = "<span style='font-size: .7em; color: red;'><b>xtra small</b></span>";
+	}
+	
+	
+	if (document.getElementById("thewidth"))
+	{
+		document.getElementById("thewidth").innerHTML = "<span style='color: red;'>Screen Width: " + myWidth + "</span>&nbsp; - &nbsp" + myInfo;
+	}
+	
+	if (document.getElementById("thewidthsmall"))
+	{
+		document.getElementById("thewidthsmall").innerHTML = "<span style='font-size: .7em; color: red;'>Width: " + myWidth + "</span>&nbsp; - &nbsp" + myInfosmall;
+	}
+}
+
+window.onload = function () 
+{
+	window.onresize = showReWidth;
+	showReWidth();
+}
+
+nav { 
+	text-align: center; 
+    font-weight: bold; 
+}
+
+nav ul { 
+	list-style-type: none;
+    padding-left: 0; 
+}
+footer { 
+	background-color: #D2B48C;
+    font-size: small;
+	font-style: italic;
+	text-align: center;
+}
+
+/* Small devices (mobile landscape, 768px and up) The navbar toggle appears at this breakpoint */
+@media (max-width: 768px) {
+    nav {
+        background-color: #b88d7f;
+    }
+    nav li {
+        border-bottom: solid 1px white;
+        padding: 2%;
+    }
+    nav a {
+        color: white;
+    }
+}
+
+//bootstrap 4
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<title>Simple Structure</title>
+	<meta charset="utf-8">
+	
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+	
+	<link rel="stylesheet" href="simple_structure_bs4.css">
+	
+	<script src="http://profperry.com/js/show_width.js"></script>
+	
+</head>
+
+
+<body>
+
+<div class="container-fluid">
+
+  <div class="row">
+	<div class="col-sm-12">
+		<header>
+			<h1>Simple Structure</h1>
+		</header>
+		
+	</div> <!-- END COL -->
+  </div> <!-- END ROW -->
+	
+  <div class="row">
+	  <div class="col-sm-2 col-md-12 col-lg-2">
+
+		<nav>
+			<ul>
+				<li><a href="simple_structure_bs4.html">Home</a></li> 
+				<li><a href="simple_structure_bs4.html">Another</a></li>
+			</ul>
+		</nav>
+		
+	  </div> <!-- END COL -->
+
+	  <div class="col-sm-10 col-md-12 col-lg-10">
+	  
+		<main>
+			<h2>Simple Structure</h2>
+			
+			<div>
+				Some Simple Text<br>
+				<br>
+			</div>
+		</main>
+		
+	  </div> <!-- END COL -->
+  </div> <!-- END ROW -->
+	
+  <div class="row">
+	  <div class="col-sm-12">
+		<footer>
+			<span id="thewidth"><span>
+		</footer>
+		
+	</div> <!-- END COL -->
+  </div> <!-- END ROW -->
+
+</div>  <!-- CONTAINER END -->
+
+
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+</body>
+</html>
+
+body { 
+    color: #221811;
+}
+
+h1 {
+	font-size:2.0rem;
+	font-weight: bold;
+} /*1rem = 16px*/
+
+h2 {
+	font-size:1.5rem;
+	font-weight: bold;
+} 
+
+nav a { 
+	display: block;
+	padding: 0.2em;
+	color: white;
+	background-color: #A88276;
+	border-bottom: 1px solid #FEF6C2; 
+}
+
+nav { 
+	text-align: center; 
+    font-weight: bold; 
+}
+
+nav ul { 
+	list-style-type: none;
+    padding-left: 0; 
+}
+
+footer { 
+	background-color: #D2B48C;
+    font-size: small;
+	font-style: italic;
+	text-align: center;
+}
+
+/* Small devices (mobile landscape, 768px and up) The navbar toggle appears at this breakpoint */
+@media (min-width: 576px) {  
+  h1 {font-size:2.5rem;} 
+  h2 {font-size:1.5rem;}
+  
+  nav a { 
+	color: blue;
+	background-color: inherit;
+	border: none; 
+  }
+  
+  
+/* Medium devices (tablets, 768px and up) The navbar toggle appears at this breakpoint */
+@media (min-width: 768px) {  
+  h1 {font-size:2.5rem;} 
+  h2 {font-size:1.5rem;}
+  
+  nav ul li {
+		display: inline-block;
+		padding: 5px;
+  }
+}
+ 
+/* Large devices (desktops, 992px and up) */
+@media (min-width: 992px) { 
+  h1 {font-size:3.0rem;} 
+  h2 {font-size:1.5rem;} 
+  
+  nav ul li {
+		display: block;
+		padding: 0px;
+  }
+}
+ 
+/* Extra large devices (large desktops, 1200px and up) */
+@media (min-width: 1200px) {  
+  h1 {font-size:3.0rem;} 
+  h2 {font-size:1.5rem;} 
+}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<title>Cozy Coffee House</title>
+	<meta charset="utf-8">
+	
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+	
+	<link rel="stylesheet" href="ex1_coffeehouse_bs4.css">
+	
+	<script src="http://profperry.com/js/show_width.js"></script>
+	
+</head>
+
+
+<body>
+
+<div class="container-fluid">
+
+  <div class="row">
+	<div class="col-sm-12">
+		<header>
+			<h1>Cozy Coffee House</h1>
+		</header>
+		
+	</div> <!-- END COL -->
+  </div> <!-- END ROW -->
+	
+  <div class="row">
+	  <div class="col-sm-2 col-md-12 col-lg-2">
+
+		<nav>
+			<ul>
+				<li><a href="ex1_coffeehouse_home_bs4.html">Home</a></li> 
+				<li><a href="ex1_coffeehouse_menu_bs4.html">Menu</a></li>
+			</ul>
+		</nav>
+		
+	  </div> <!-- END COL -->
+
+	  <div class="col-sm-10 col-md-12 col-lg-10">
+	  
+		<main>
+			<h2>Relax at the Cozy Coffee House</h2>
+			
+			<ul>
+			  <li>Specialty Coffee and Tea</li>
+			  <li>Bagels, Muffins, and Organic Snacks</li>
+			  <li>Music and Poetry Readings</li>
+			  <li>Open Mic Night</li>
+			</ul>
+			
+			<div>
+				54321 Route 42<br>
+				Ellison Bay, WI 54210<br>
+				888-555-5555<br>
+				<br>
+			</div>
+		</main>
+		
+	  </div> <!-- END COL -->
+  </div> <!-- END ROW -->
+	
+  <div class="row">
+	  <div class="col-sm">
+		<footer>
+			Copyright &copy; 2018 Cozy Coffee House<br>
+			<span id="thewidth"><span>
+		</footer>
+		
+	</div> <!-- END COL -->
+  </div> <!-- END ROW -->
+
+</div>  <!-- CONTAINER END -->
+
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+</body>
+</html>
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<title>Cozy Coffee House - Menu</title>
+	<meta charset="utf-8">
+	
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+	
+	<link rel="stylesheet" href="ex1_coffeehouse_bs4.css">
+	
+	<script src="http://profperry.com/js/show_width.js"></script>
+</head>
+
+<body>
+<div class="container-fluid">
+
+  <div class="row">
+	<div class="col-sm">
+		<header>
+			<h1>Cozy Coffee House - Menu</h1>
+		</header>
+		
+	</div> <!-- END COL -->
+  </div> <!-- END ROW -->
+	
+  <div class="row">
+	  <div class="col-sm-2 col-md-12 col-lg-2">
+
+		<nav>
+			<ul>
+				<li><a href="ex1_coffeehouse_home_bs4.html">Home</a> </li> 
+				<li><a href="ex1_coffeehouse_menu_bs4.html">Menu</a> </li>
+			</ul>
+		</nav>
+		
+	  </div> <!-- END COL -->
+
+	  <div class="col-sm-10 col-md-12 col-lg-10">
+	  
+		<main>
+			<h2>Coffee at Cozy Coffee House</h2>
+			
+			<dl>
+			
+				<dt><strong>Just Coffee</strong></dt>
+				<dd>Regular house blend, decaffeinated coffee, or flavor of the day.<br>Endless Cup $2.00</dd>
+				
+				<dt><strong>Cafe au Lait</strong></dt>
+				<dd>House blended coffee infused into a smooth, steamed milk.<br>Single $2.00 Double $3.00</dd>
+				
+				<dt><strong>Iced Cappuccino</strong></dt>
+				<dd>Sweetened espresso blended with icy-cold milk and served in a chilled glass.<br>Single $4.75 Double $5.75</dd>
+			
+			</dl>
+		</main>
+		
+	  </div> <!-- END COL -->
+  </div> <!-- END ROW -->
+	
+  <div class="row">
+	  <div class="col-sm">
+		<footer>
+			Copyright &copy; 2018 Cozy Coffee House<br>
+			<span id="thewidth"><span>
+		</footer>
+		
+	</div> <!-- END COL -->
+  </div> <!-- END ROW -->
+
+</div>  <!-- CONTAINER END -->
+
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+</body>
+</html>
+
+//show_width.js
+function showReWidth()
+{
+	var myWidth = 0, myHeight = 0;
+	if( typeof( window.innerWidth ) == 'number' ) {
+		myWidth = window.innerWidth; myHeight = window.innerHeight;
+	} else if( document.documentElement && ( document.documentElement.clientWidth ||document.documentElement.clientHeight ) ) {
+		myWidth = document.documentElement.clientWidth; myHeight = document.documentElement.clientHeight;
+	} else if( document.body && ( document.body.clientWidth || document.body.clientHeight ) ) {
+		myWidth = document.body.clientWidth; myHeight = document.body.clientHeight;
+	}
+	
+	myInfo = "<span style='color: brown;'><b>col-xl-#</b> (xlarge devices - screen width equal to or greater than 1200px)</span>";
+	myInfosmall = "<span style='font-size: .7em; color: brown;'><b>col-xl-#</b></span>";
+	
+	if (myWidth < 1200)
+	{
+		myInfo = "<span style='color: purle;'><b>col-lg-#</b> (large devices - screen width equal to or greater than 992px)</span>";
+		myInfosmall = "<span style='font-size: .7em; color: purple;'><b>col-lg-#</b></span>";
+	
+	}
+	
+	if (myWidth < 992)
+	{
+		myInfo = "<span style='color: green;'><b>col-md-#</b> (medium devices - screen width equal to or greater than 768px)</span>";
+		myInfosmall = "<span style='font-size: .7em; color: green;'><b>col-md-#</b></span>";
+	}
+	
+	if (myWidth < 768)
+	{
+		myInfo = "<span style='color: blue;'><b>col-sm-#</b> (small devices - screen width equal to or greater than 576px)</span>";
+		myInfosmall = "<span style='font-size: .7em; color: blue;'><b>col-sm-#</b></span>";
+	}
+		
+	if (myWidth < 576)
+	{
+		myInfo = "<span style='color: red;'> <b>col#</b> - (extra small devices - screen width less than 576px)</span>";
+		myInfosmall = "<span style='font-size: .7em; color: red;'><b>xtra small</b></span>";
+	}
+	
+	
+	if (document.getElementById("thewidth"))
+	{
+		document.getElementById("thewidth").innerHTML = "<span style='color: red;'>Screen Width: " + myWidth + "</span>&nbsp; - &nbsp" + myInfo;
+	}
+	
+	if (document.getElementById("thewidthsmall"))
+	{
+		document.getElementById("thewidthsmall").innerHTML = "<span style='font-size: .7em; color: red;'>Width: " + myWidth + "</span>&nbsp; - &nbsp" + myInfosmall;
+	}
+}
+
+window.onload = function () 
+{
+	window.onresize = showReWidth;
+	showReWidth();
+}
+
+body { 
+    background-color: #FCEBB6 !important; 
+    color: #221811;
+}
+
+header { 
+	background-color: #D2B48C;
+    text-align: center; 
+	padding: 5px;
+}
+
+h1 {
+	font-size:2.0rem;
+	font-weight: bold;
+} /*1rem = 16px*/
+
+h2 {
+	font-size:1.5rem;
+	font-weight: bold;
+} 
+
+nav a { 
+	display: block;
+	padding: 0.2em;
+	color: white;
+	background-color: #A88276;
+	border-bottom: 1px solid #FEF6C2; 
+}
+
+nav { 
+	text-align: center; 
+    font-weight: bold; 
+}
+
+nav ul { 
+	list-style-type: none;
+    padding-left: 0; 
+}
+
+footer { 
+	background-color: #D2B48C;
+    font-size: small;
+	font-style: italic;
+	text-align: center;
+}
+
+/* Small devices (mobile landscape, 768px and up) The navbar toggle appears at this breakpoint */
+@media (min-width: 576px) {  
+  h1 {font-size:2.5rem;} 
+  h2 {font-size:1.5rem;}
+  
+  nav a { 
+	color: blue;
+	background-color: inherit;
+	border: none; 
+  }
+  
+  
+/* Medium devices (tablets, 768px and up) The navbar toggle appears at this breakpoint */
+@media (min-width: 768px) {  
+  h1 {font-size:2.5rem;} 
+  h2 {font-size:1.5rem;}
+  
+  nav ul li {
+		display: inline-block;
+		padding: 5px;
+  }
+}
+ 
+/* Large devices (desktops, 992px and up) */
+@media (min-width: 992px) { 
+  h1 {font-size:3.0rem;} 
+  h2 {font-size:1.5rem;} 
+  
+  nav ul li {
+		display: block;
+		padding: 0px;
+  }
+}
+ 
+/* Extra large devices (large desktops, 1200px and up) */
+@media (min-width: 1200px) {  
+  h1 {font-size:3.0rem;} 
+  h2 {font-size:1.5rem;} 
+}
+
+//Bootstrap 4 Flexbox Classes
+<div class="d-flex flex-row justify-content-start flex-wrap">
+  <div class="order-sm-3">Soldier 3 <small>I want to lead!</small></div>
+  <div class="order-sm-1">Soldier 1 <small>Yes sir!</small></div>
+  <div class="order-sm-2">Soldier 2 <small>Ten hut!</small></div>
+</div>
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<title>Example 2-4</title>
+	<meta charset="utf-8">
+	
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+	
+	<script src="http://profperry.com/js/show_width.js"></script>
+	
+</head>
+
+
+<body>
+
+<div class="container-fluid">
+
+	<div class="row">
+		<div class="col-md-1 bg-info text-white">This is the first box<br>on the first row</div>
+		<div class="col-md-3 bg-primary text-white">This is the second box<br>on the first row</div>
+		<div class="col-md-6 bg-info text-white">This is the third box<br>on the first row</div>
+		<div class="col-md-2 bg-primary text-white">This is the fourth box<br>on the first row</div>
+	</div> <!-- ROW END -->
+	
+	<div class="row">
+		<div class="col-md-3 bg-warning text-white">This is the first box<br>on the second row</div>
+		<div class="col-md-6 bg-danger text-white">This is the second box<br>on the second row</div>
+		<div class="col-md-3 bg-warning text-white">This is the third box<br>on the second row</div>
+	</div>
+</div>  <!-- CONTAINER END -->
+
+<span id="thewidthsmall"></span>
+
+
+
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+</body>
+</html>
+
+//spacing / offset bootstrap
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<title>Example 2-5</title>
+	<meta charset="utf-8">
+	
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+	
+	<script src="http://profperry.com/js/show_width.js"></script>
+	
+</head>
+ 
+
+<body>
+
+<div class="container-fluid">
+
+	<div class="row">
+		<div class="col-md-2 offset-6 bg-info text-white">.col-md-2 offset-6</div>
+		<div class="col-md-4 bg-primary text-white">.col-md-4</div>
+	</div> <!-- ROW END -->
+	
+	<div class="row">
+		<div class="col-md-3 bg-warning text-white">.col-md-3</div>
+		<div class="col-md-6 bg-danger text-white">.col-md-6</div>
+		<div class="col-md-3 bg-warning text-white">.col-md-3</div>
+	</div>
+</div>  <!-- CONTAINER END -->
+
+<span id="thewidthsmall"></span>
+
+
+
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+</body>
+</html>
+
+//rows > columns > rows bootstrap 
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<title>Example 2-7</title>
+	<meta charset="utf-8">
+	
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+	
+	<script src="http://profperry.com/js/show_width.js"></script>
+	
+</head>
+ 
+
+<body>
+
+<div class="container-fluid">
+	
+<div class="row">
+	<div class="col-md-8 bg-info text-white" >
+		.col-md-8
+		<div class="row">
+			<div class="col-6 col-md-5 bg-primary text-white">.col-md-5</div>
+			<div class="col-6 col-md-7 bg-warning text-white">.col-md-7</div>
+		</div>
+		More from .col-md_8
+	</div>
+	<div class="col-md-4 bg-primary text-white">.col-md-4</div>
+</div>
+	
+</div>  <!-- CONTAINER END -->
+
+<span id="thewidthsmall"></span>
+
+
+
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+</body>
+</html>
+
+//assignment 7 bootstrap 2
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assignment 7</title>
+    
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    
+    <link rel='stylesheet' href='styles.css'>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+	
+	<script src="http://profperry.com/js/show_width.js"></script>
+	
+</head>
+<body> 
+    <div class='container-fluid text-white'>
+        <div class='row'>
+            <div class='col-md-8 bg-primary'>
+                <div class='row'>
+                    <div class='col-md-9'>
+                        <h2>
+                            Assignment 2
+                        </h2>
+                    </div>
+                </div>
+                <div class='d-flex flex-row'>
+                    <div class='col-sm-3 col-md-3'>                        
+                        <li>Link 1</li>
+                    </div>
+                    <div class='col-sm-3 col-md-3'>
+                        <li>Link 2</li>
+                    </div>
+                    <div class='col-sm-3 col-md-3'>
+                        <li>Link 3</li>
+                    </div>
+                </div>
+                <hr>
+                <div class='row bg-warning' id='emptyRow'>
+                </div>
+                <div class='row bg-info'>
+                    <div class='col-md-8'>
+                        <h4>Welcome to our Holiday Catalog</h4>
+                    </div>
+                    <div class='col-md-4'>
+                        <p>Look for items on sale!</p>
+                    </div>
+                </div>
+            </div>
+            <div class='col-md-4 bg-warning' id='imagePosition'>
+                <p>(A happy Image would go here)</p>
+            </div>
+        </div>
+        <div class='row'>
+            <div class='col-md-3 bg-danger'>
+                <p>Ugly Sweaters For Dad!</p>
+            </div>
+            <div class='col-md-3 bg-success'>
+                <p>Treats for your Sweet!</p>
+            </div>
+            <div class='col-md-3 bg-danger'>
+                <p>Toys that don't need batteries!</p>
+            </div>
+            <div class='col-md-3 bg-success'>
+                <p>Gift coupons for those that can't decide</p>
+            </div>
+        </div>
+        <!--Finished!-->
+        <div class='row'>
+            <div class='col-sm'>
+                <footer>
+                    <span id='thewidthsmall'>
+                    </span>
+                </footer>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
+function showReWidth()
+{
+	var myWidth = 0, myHeight = 0;
+	if( typeof( window.innerWidth ) == 'number' ) {
+		myWidth = window.innerWidth; myHeight = window.innerHeight;
+	} else if( document.documentElement && ( document.documentElement.clientWidth ||document.documentElement.clientHeight ) ) {
+		myWidth = document.documentElement.clientWidth; myHeight = document.documentElement.clientHeight;
+	} else if( document.body && ( document.body.clientWidth || document.body.clientHeight ) ) {
+		myWidth = document.body.clientWidth; myHeight = document.body.clientHeight;
+	}
+	
+	myInfo = "<span style='color: brown;'><b>col-xl-#</b> (xlarge devices - screen width equal to or greater than 1200px)</span>";
+	myInfosmall = "<span style='font-size: .7em; color: brown;'><b>col-xl-#</b></span>";
+	
+	if (myWidth < 1200)
+	{
+		myInfo = "<span style='color: purle;'><b>col-lg-#</b> (large devices - screen width equal to or greater than 992px)</span>";
+		myInfosmall = "<span style='font-size: .7em; color: purple;'><b>col-lg-#</b></span>";
+	
+	}
+	
+	if (myWidth < 992)
+	{
+		myInfo = "<span style='color: green;'><b>col-md-#</b> (medium devices - screen width equal to or greater than 768px)</span>";
+		myInfosmall = "<span style='font-size: .7em; color: green;'><b>col-md-#</b></span>";
+	}
+	
+	if (myWidth < 768)
+	{
+		myInfo = "<span style='color: blue;'><b>col-sm-#</b> (small devices - screen width equal to or greater than 576px)</span>";
+		myInfosmall = "<span style='font-size: .7em; color: blue;'><b>col-sm-#</b></span>";
+	}
+		
+	if (myWidth < 576)
+	{
+		myInfo = "<span style='color: red;'> <b>col#</b> - (extra small devices - screen width less than 576px)</span>";
+		myInfosmall = "<span style='font-size: .7em; color: red;'><b>xtra small</b></span>";
+	}
+	
+	
+	if (document.getElementById("thewidth"))
+	{
+		document.getElementById("thewidth").innerHTML = "<span style='color: red;'>Screen Width: " + myWidth + "</span>&nbsp; - &nbsp" + myInfo;
+	}
+	
+	if (document.getElementById("thewidthsmall"))
+	{
+		document.getElementById("thewidthsmall").innerHTML = "<span style='font-size: .7em; color: red;'>Width: " + myWidth + "</span>&nbsp; - &nbsp" + myInfosmall;
+	}
+}
+
+window.onload = function () 
+{
+	window.onresize = showReWidth;
+	showReWidth();
+}
+
+//styles.css
+.container-fluid {
+    background-color: #D7EDF5;
+}
+
+li {
+    list-style-type: none;
+}
+
+@media (max-width: 767px) {
+    .bg-warning:nth-of-type(3) {
+        height: 1px;
+    }
+
+    .bg-warning p {
+        margin-bottom: 1px;
+    }
+
+    .bg-danger p {
+        width: 25%;
+    }
+}
+
+//responsive img
+<div class="bg-dark">
+	<img src="tesla_in_space_sm1.jpg" class="img-fluid">
+</div>
+
+<img src="tesla_in_space_sm1.jpg" class="img-fluid rounded-circle">
+
+<img src="tesla_in_space_sm1.jpg" class="img-fluid float-right">
+
+<div class="row">
+	<div class="col-md-8 bg-info text-white pb-3 border border-dark">
+	<h1>Starman</h1>
+	<div class="row">
+	<div class="col-6 col-md-5 bg-primary text-white pb-3 border
+	border-dark">
+	There's a starman waiting in the sky
+	</div>
+	<div class="col-6 col-md-7 bg-warning text-danger pb-3
+	border border-dark">
+	He'd like to come and meet us
+	</div>
+	</div>
+	But he thinks he'd blow our minds
+	</div>
+	<div class="col-md-4 bg-dark border border-danger">
+	<img src="tesla_in_space_sm1.jpg" class="img-fluid">
+	</div>
+	</div>
+
+	<!DOCTYPE html>
+	<html lang="en">
+	
+	<head>
+	<title>Example 3-8</title>
+		<meta charset="utf-8">
+		
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+		
+		<style>
+			body { background-color: darkgray;}
+		</style>
+		
+		<script src="http://profperry.com/js/show_width.js"></script>
+		
+		
+	</head>
+	 
+	<body>
+	
+	<div class="container-fluid">
+		
+	<div class="row">
+		<div class="col-md-8 pb-3 bg-info text-white border border-dark">
+			<table class="table table-hover table-striped">
+			<thead>
+				<tr>
+					<th>First Name</th>
+					<th>Last Name</th>
+					<th>Phone</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>John</td>
+					<td>Smith</td>
+					<td>111-222-3333</td>
+				</tr>
+				<tr>
+					<td>Mary</td>
+					<td>Jones</td>
+					<td>222-333-4444</td>
+				</tr>
+				<tr>
+					<td>Mike</td>
+					<td>Parks</td>
+					<td>333-444-5555</td>
+				</tr>
+			
+			</tbody>
+		</table>
+					
+		</div>
+		<div class="col-md-4 bg-dark  border border-danger">
+			<img src="tesla_in_space_sm1.jpg" class="img-fluid" alt="tesla in space">
+		</div>
+	</div>
+		
+	</div>  <!-- CONTAINER END -->
+	
+	<span id="thewidthsmall"></span>
+	
+	
+	
+	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+	
+	</body>
+	</html>
+
+	<!DOCTYPE html>
+	<html lang="en">
+	
+	<head>
+	<title>Example 3-20</title>
+		<meta charset="utf-8">
+		
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+	
+		
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+		
+		<style>
+			body { background-color: lightblue;}
+			
+			p {font-weight: bold;}
+			
+			.myblue {background-color: blue;}
+		</style>
+		
+		<script src="http://profperry.com/js/show_width.js"></script>
+		
+		
+	</head>
+	 
+	<body>
+	
+	<div class="container-fluid">
+		
+		<div class="row">
+				<div class="col-md-2 mt-2 text-primary">
+					
+					<h4 id="contact">Contact Us</h4>
+					
+					<h5>Profperry 2.0</h5>
+					
+					<p>Let us know about your eductional needs:</p>
+					
+					<p>123 Any Street</br>
+					Some Town, CA 99999</br>
+					555-222-4444</p>
+					
+				</div>
+				
+				<div class="col-md-10 mt-2 pb-3 bg-info text-white">
+					<form method="post" action="http://profperry.com/Classes20/Bootstrap/ex20_repsonse.php">
+						<!-- 1. Text Input -->
+						<div class="form-group">
+							<label for="username">Enter Username</label>
+							
+							<input type="text" class="form-control" id="username" name="username" aria-describedby="Username" placeholder="Enter Username">
+							
+							<small id="Username" class="form-text text-muted">Enter username to login.</small>
+						</div>
+						
+						<!-- 2. Password -->
+						<div class="form-group">
+							<label for="password">Enter Password</label>
+							
+							<input type="password" class="form-control" id="password" name="password" placeholder="Password">
+						</div>
+						
+						<!-- 3. Single Select -->
+						<div class="form-group">
+							<label for="singleselect">Single Select from the Dropdown</label>
+							
+							<select class="form-control" id="singleselect" name="singleselect">
+								<option>Option 1</option>
+								<option>Option 2</option>
+								<option>Option 3</option>
+								<option>Option 4</option>
+								<option>Option 5</option>
+							</select>
+						</div>
+						
+						<!-- 4. Textarea -->
+						<div class="form-group">
+							<label for="textarea">Textarea Input</label>
+							
+							<textarea class="form-control" id="textarea" name="textarea" rows="5"></textarea>
+						</div>
+						
+						<!-- 5. Radio Buttons -->
+						<fieldset class="form-group">
+							<legend>Radio Buttons</legend>
+							
+							<div class="form-check">
+								<label class="form-check-label">
+									<input type="radio" class="form-check-input" name="radio" id="radio1" value="Option 1" checked>
+									Option 1
+								</label>
+							</div>
+							
+							<div class="form-check">
+								<label class="form-check-label">
+									<input type="radio" class="form-check-input" name="radio" id="radio2" value="Option 2">
+									Option 2 
+								</label>
+							</div>
+							
+							<div class="form-check disabled">
+								<label class="form-check-label">
+									<input type="radio" class="form-check-input" name="radio" id="radio3" value="Option 3" disabled>
+									Option 3
+								</label>
+							</div>
+							
+						</fieldset>
+						
+						<!-- 6. Checkbox -->
+						<fieldset class="form-group">
+						
+							<legend>Check Boxes</legend>	
+						
+							<div class="form-check">
+								<label class="form-check-label">
+									<input type="checkbox" class="form-check-input">
+									This is a checkbox 1.
+								</label>
+							</div>
+							
+							<div class="form-check">
+								<label class="form-check-label">
+									<input type="checkbox" class="form-check-input">
+									This is a checkbox 2.
+								</label>
+							</div>
+							
+							<div class="form-check">
+								<label class="form-check-label">
+									<input type="checkbox" class="form-check-input">
+									This is a checkbox 3.
+								</label>
+							</div>
+							
+						</fieldset>
+						
+						<!-- 8. Submit Button -->
+						<button type="submit" class="btn btn-success">Submit</button>
+						
+						</form>
+				</div>
+			</div>
+		</div>
+		
+	</div>  <!-- CONTAINER END -->
+	
+	<span id="thewidthsmall"></span>
+	
+	
+	
+	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+	
+	</body>
+	</html>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Assignment 8</title>
+	
+	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+	
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+	
+	<script src="http://profperry.com/js/show_width.js"></script>
+	
+</head>
+<body>
+	<div class='container-fluid bg-danger'>
+		<div class='row'>
+			<div class='col-md-12 text-white'>
+				<h4>Skiiing over the Eiffel</h4>
+			</div>
+		</div>
+		<div class='row'>
+			<div class='col-md-8 border'>
+				<img src='http://profperry.com/Classes20/Bootstrap/Assignment_3/skiing-the-eiffel_crop.jpg' class='img-fluid rounded pt-1 pb-1'>
+			</div>
+		</div>
+		<div class='row'>
+			<div class='col-md-5 border text-white pt-1'>
+				<table class='table table-hover'>
+					<p><b>Eiffel Collegiate Skiers</b></p>
+					<thead>
+						<tr>
+							<th>First Name</th>
+							<th>Phone</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td>John</td>
+							<td>111-222-3333</td>
+						</tr>
+						<tr>
+							<td>Mary</td>
+							<td>222-333-4444</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			<div class='col-md-3 border text-white'>
+				<form method='post' class='pt-1 pb-4' action='http://profperry.com/Classes20/Bootstrap/ex20_response.php' class=''>
+					<p><b>New Entrant</b></p>
+					<div class='form-group'>
+						<label for='firstname'>
+							Enter First Name
+						</label>
+						<input type='text' class='form-control' id="firstName" name="firstname" aria-describedby="Firstname" placeholder="Enter First Name">
+					</div>
+					<div class='form-group'>
+						<label for='collegeyear'>
+							Which year of college are you?
+						</label>
+						<select class='form-control' id='collegeTear' name='collegeyear'>
+							<option>Freshman</option>
+							<option>Sophomore</option>
+							<option>Junior</option>
+							<option>Senior</option>
+						</select>
+					</div>
+					<button type='submit' class='btn btn-secondary'>
+						Submit
+					</button>
+				</form>
+			</div>
+		</div>
+		<span id="thewidthsmall"></span>
+	</div>
+</body>
+</html>
+

@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>Assignment 3</title> 
+	<meta charset="UTF-8">
+	<style>
+		body {
+			background-color: grey;
+		}
+		
+		#logon {
+			width: 60px;
+			margin-left: 80px;
+		}
+		input {
+			width: 100px;
+			margin: 1px;
+		}
+	</style>
+	
+	<script>
+		var XMLHttpRequestObject = false;
+
+		if (window.XMLHttpRequest) {
+	  		XMLHttpRequestObject = new XMLHttpRequest();
+			XMLHttpRequestObject.overrideMimeType("text/xml");  //XML
+		} else if (window.ActiveXObject) {
+	  		XMLHttpRequestObject = new ActiveXObject("Microsoft.XMLHTTP");
+		}
+
+		function validateLogon(dataSource, divID) {
+			var user = document.getElementById('userid').value;
+			var pass = document.getElementById('password').value;
+			var data = user + '|' + pass;
+		  
+		  	getXML(dataSource, divID, data);
+			
+		  	return false;
+		}
+
+		function getXML(dataSource, divID, data) {
+			if(XMLHttpRequestObject) {
+				var obj = document.getElementById(divID);
+				obj.innerHTML = "Loading...";  //new!!
+
+				XMLHttpRequestObject.open("POST", dataSource);
+				XMLHttpRequestObject.setRequestHeader('Content-Type',
+					'application/x-www-form-urlencoded');
+
+				XMLHttpRequestObject.onreadystatechange = function() {
+					if (XMLHttpRequestObject.readyState == 4 && 
+		        	XMLHttpRequestObject.status == 200) { 
+						var myXML = XMLHttpRequestObject.responseXML; //XML
+							displayXML(myXML);
+					}
+				}
+				XMLHttpRequestObject.send("data=" + data);
+			}
+		}
+
+		function showXMLText(myXML) {
+			//Displays XML object's data in an alert() box
+			var myXMLtext = (new XMLSerializer()).serializeToString(myXML);
+			myXMLformatted = myXMLtext.replace(/</g, "\n<");
+			alert(myXMLformatted);
+		}
+
+		function displayXML(myXML) {
+			//showXMLText(myXML);
+			//Store the "logon" elementss into an array
+			//Retrieve the first two elements of the array into two javascript variables 
+			//for the myLogonText and myPassKey variables
+			var XMLElements = myXML.getElementsByTagName("logon");
+			var myLogonText = XMLElements[0].firstChild.data;
+			var myPassKey = XMLElements[1].firstChild.data;
+			
+			if (myLogonText == "Error")
+			{
+				//Display error
+				document.getElementById('targetDiv').innerHTML = myLogonText;
+				
+			} else {
+				
+				if (myLogonText == "Success")
+				{
+					//Call the getXML function
+					getXML("http://profperrytest.com/AJAXPHP/displayAccount.php", "targetDiv", myPassKey);
+				} else {
+					//Store the "trans" elementss into an array
+					var loopIndex;
+        			var transactions = myXML.getElementsByTagName('trans');
+					var transactionCount = transactions.length;
+
+					document.getElementById('loggedInMessage').innerHTML += "<b>Account Transactions</b>";
+
+					//Loop throught the array and display each transactions in HTML table row
+					for (loopIndex = 0; loopIndex < transactionCount; loopIndex++) {
+						document.getElementById('results').innerHTML += "<tr><td>" + transactions[loopIndex].firstChild.data + "</td></tr>";
+					}
+
+					//Hide logon div   
+					var myLogonForm = document.getElementById("form-container");
+					myLogonForm.style.display = "none";
+					document.getElementById("results").style.border = "ridge #B0B0B0";
+				}
+			}
+		}
+	</script>
+</head>
+
+<body>
+	<form id="form-container">
+		<h1>Logon</h1>
+		<p>
+			Userid:		
+			<input type="text" name="userid" id="userid" size="30" />
+			<br />
+			Password:	
+			<input type="text" name="password" id="password" size="30" />
+
+		</p>
+
+		<p>
+			<input type="button" value="Logon" 
+				onclick= "validateLogon('http://profperrytest.com/AJAXPHP/validate_logonxml.php', 'targetDiv')">
+		</p>
+
+		<p id="targetDiv"></p>
+
+	</form>
+	<div>
+		<h4 id="loggedInMessage"></h4>
+		<table id="results">
+
+		</table>
+	</div>
+</body>
+</html>

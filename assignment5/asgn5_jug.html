@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+		<title>jQuery Mobile</title>
+
+		<link rel = "apple-touch-icon" href = "myiPhoneIcon.png" />
+
+		<link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />
+		<script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+        <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+        <link rel="stylesheet" href="css/styles.css" />
+	</head>
+<body>
+    <div data-role="page" id='home'>
+        <header data-role="header">
+            <h1>Resume</h1>
+            <div data-role="navbar">
+				<ul>
+					<li><a href="#home" data-icon="home" class="ui-btn-active" data-theme="b">Home</a></li>
+					<li><a href="#skills" data-icon="star" data-theme="b">Skills</a></li>
+	            	<li><a href="#employment" data-icon="grid" data-theme="b">Employment</a></li>
+				</ul>
+	    	</div>
+        </header>
+        <section data-role="content">
+            <section id='image'>
+                <img src='https://scontent-lax3-1.cdninstagram.com/v/t51.2885-19/s150x150/69926143_2502799763287095_2506398882217328640_n.jpg?_nc_ht=scontent-lax3-1.cdninstagram.com&_nc_ohc=rwdgcHjY-cwAX_a_e4R&oh=d6c0a870d81c464f2eab23ab69e291cb&oe=5EC4C3AF' id='headshot'>
+            </section>
+            <section id='contact'>
+                <h2>Bryan Jug</h2>
+                <h2>Software Engineer Student</h2>
+                <p>PO Box 2095</p>
+                <p>Temecula CA, 92593</p>
+                <p><a href='tel:951-595-5284'>951.595.5284</a></p>
+                <p><a>bjug3242@student.palomar.edu</a></p>
+            </section>
+            <section id='education'>
+                <h1>Education</h1>
+                <ul>
+                    <li>Palomar College, AS Degree, 2020</li>
+                    <li>MySQL, React.js, JavaScript Data Structures & Algorithms Udemy courses</li>
+                </ul>
+            </section>
+            <section id='summary'>
+                <h1>Qualification Summary</h1>
+                <p>Over 1 year of experience as a Software Engineer and a student of Palomar College. 
+                    Classes were held both in person and online. The Udemy courses were taken as extra
+                     curricular activities.
+                </p>
+            </section>
+        </section>
+        <footer data-role="footer">
+            <h1>&copy; 2015</h1>
+        </footer>
+    </div>
+    <div data-role='page' id='skills'>
+        <header data-role="header">
+            <h1>Resume</h1>
+            <div data-role="navbar">
+				<ul>
+					<li><a href="#home" data-icon="home" data-theme="b">Home</a></li>
+					<li><a href="#skills" data-icon="star" class="ui-btn-active" data-theme="b">Skills</a></li>
+	            	<li><a href="#employment" data-icon="grid" data-theme="b">Employment</a></li>
+				</ul>
+            </div>
+        </header>
+        <section data-role="content">
+            <section id='skillsOffered'>
+                <h1>Skills Offered</h1>
+                <table>
+                    <tr>
+                        <th>Skill</th>
+                        <th>Description</th>
+                    </tr>
+                    <tr>
+                        <td>JavaScript</td>
+                        <td>Learned through college classes and udemy courses</td>
+                    </tr>
+                    <tr>
+                        <td>MySQL</td>
+                        <td>Learned through college classes and udemy courses</td>
+                    </tr>
+                    <tr>
+                        <td>PHP</td>
+                        <td>Learned through college classes</td>
+                    </tr>
+                    <tr>
+                        <td>HTML & Css</td>
+                        <td>Learned through college classes and CodeAcademy</td>
+                    </tr>
+                    <tr>
+                        <td>NoSQL</td>
+                        <td>Learned through udemy courses</td>
+                    </tr>
+                    <tr>
+                        <td>React.js</td>
+                        <td>Learned through udemy courses</td>
+                    </tr>
+                    <tr>
+                        <td>jQuery</td>
+                        <td>Learned through college classes</td>
+                    </tr>
+                    <tr>
+                        <td>Unity & Blender</td>
+                        <td>Built animations with 3D objects</td>
+                    </tr>
+                    <tr>
+                        <td>R</td>
+                        <td>Learned through college classes</td>
+                    </tr>
+                    <tr>
+                        <td>C</td>
+                        <td>Learned through college classes</td>
+                    </tr>
+                </table>
+            </section>
+        </section>
+        <footer data-role="footer">
+            <h4>&copy; 2015</h4>
+        </footer>
+    </div>
+    <div data-role='page' id='employment'>
+        <header data-role="header">
+            <h1>Resume</h1>
+            <div data-role="navbar">
+				<ul>
+					<li><a href="#home" data-icon="home" data-theme="b">Home</a></li>
+					<li><a href="#skills" data-icon="star" data-theme="b">Skills</a></li>
+	            	<li><a href="#employment" data-icon="grid" class="ui-btn-active" data-theme="b">Employment</a></li>
+				</ul>
+            </div>
+        </header>
+        <section data-role="content">
+            <section id='employmentHistory'>
+                <h1>Employment History</h1>
+                
+                <h1>Get Flexed, Temecula, CA</h1>
+                <h2>General Warehouse</h2>
+                <h2>Jan. 2016 - 2018</h2>
+                <p>Part time warehouse stocking of various workout equipment. The job 
+                    included installing the equipment into gyms in local areas.
+                </p>
+
+                <h1>Instacart</h1>
+                <h2>Food Delivery</h2>
+                <h2>Jan. 2018 - Present</h2>
+                <p>Part time grocery delivering in my local area and other parts of California. 
+                    Requires the person to drive and deliver people bags filled with food.
+                </p>
+            </section>
+        </section>
+        <footer data-role="footer">
+            <h4>&copy; 2015</h4>
+        </footer>
+    </div>
+</body>
+</html>
